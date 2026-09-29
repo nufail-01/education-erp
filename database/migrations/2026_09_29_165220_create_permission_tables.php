@@ -11,47 +11,44 @@ return new class extends Migration
      */
     public function up(): void
     {
-        $teams = config('permission.teams');
         $tableNames = config('permission.table_names');
         $columnNames = config('permission.column_names');
         $pivotRole = $columnNames['role_pivot_key'] ?? 'role_id';
         $pivotPermission = $columnNames['permission_pivot_key'] ?? 'permission_id';
+        $teamKey = $columnNames['team_foreign_key'] ?? 'institute_id';
 
         throw_if(empty($tableNames), 'Error: config/permission.php not loaded. Run [php artisan config:clear] and try again.');
-        throw_if($teams && empty($columnNames['team_foreign_key'] ?? null), 'Error: team_foreign_key on config/permission.php not loaded. Run [php artisan config:clear] and try again.');
+        throw_if(! config('permission.teams'), 'Error: set teams => true in config/permission.php before running this migration.');
 
-        /**
-         * See `docs/prerequisites.md` for suggested lengths on 'name' and 'guard_name' if "1071 Specified key was too long" errors are encountered.
-         */
+        // Permissions: is_delegable = Institute Admin isko aage de sakta hai ya nahi
         Schema::create($tableNames['permissions'], static function (Blueprint $table) {
-            $table->id(); // permission id
+            $table->id();
             $table->string('name');
             $table->string('guard_name');
+            $table->boolean('is_delegable')->default(false);
             $table->timestamps();
 
             $table->unique(['name', 'guard_name']);
         });
 
-        /**
-         * See `docs/prerequisites.md` for suggested lengths on 'name' and 'guard_name' if "1071 Specified key was too long" errors are encountered.
-         */
-        Schema::create($tableNames['roles'], static function (Blueprint $table) use ($teams, $columnNames) {
-            $table->id(); // role id
-            if ($teams || config('permission.testing')) { // permission.testing is a fix for sqlite testing
-                $table->unsignedBigInteger($columnNames['team_foreign_key'])->nullable();
-                $table->index($columnNames['team_foreign_key'], 'roles_team_foreign_key_index');
-            }
+        // Roles: institute_id NULL = global role (Super Admin ke), value = us institute ka role
+        Schema::create($tableNames['roles'], static function (Blueprint $table) use ($teamKey) {
+            $table->id();
+            $table->unsignedBigInteger($teamKey)->nullable();
             $table->string('name');
             $table->string('guard_name');
+            $table->boolean('is_protected')->default(false);
             $table->timestamps();
-            if ($teams || config('permission.testing')) {
-                $table->unique([$columnNames['team_foreign_key'], 'name', 'guard_name']);
-            } else {
-                $table->unique(['name', 'guard_name']);
-            }
+
+            $table->foreign($teamKey)
+                ->references('id')
+                ->on('institutes')
+                ->cascadeOnDelete();
+            $table->index($teamKey, 'roles_team_foreign_key_index');
+            $table->unique([$teamKey, 'name', 'guard_name']);
         });
 
-        Schema::create($tableNames['model_has_permissions'], static function (Blueprint $table) use ($tableNames, $columnNames, $pivotPermission, $teams) {
+        Schema::create($tableNames['model_has_permissions'], static function (Blueprint $table) use ($tableNames, $columnNames, $pivotPermission, $teamKey) {
             $table->unsignedBigInteger($pivotPermission);
 
             $table->string('model_type');
@@ -59,22 +56,21 @@ return new class extends Migration
             $table->index([$columnNames['model_morph_key'], 'model_type'], 'model_has_permissions_model_id_model_type_index');
 
             $table->foreign($pivotPermission)
-                ->references('id') // permission id
+                ->references('id')
                 ->on($tableNames['permissions'])
                 ->cascadeOnDelete();
-            if ($teams) {
-                $table->unsignedBigInteger($columnNames['team_foreign_key']);
-                $table->index($columnNames['team_foreign_key'], 'model_has_permissions_team_foreign_key_index');
 
-                $table->primary([$columnNames['team_foreign_key'], $pivotPermission, $columnNames['model_morph_key'], 'model_type'],
-                    'model_has_permissions_permission_model_type_primary');
-            } else {
-                $table->primary([$pivotPermission, $columnNames['model_morph_key'], 'model_type'],
-                    'model_has_permissions_permission_model_type_primary');
-            }
+            // Super Admin ke liye team id 0 use hoga (primary key mein NULL allowed nahi)
+            $table->unsignedBigInteger($teamKey);
+            $table->index($teamKey, 'model_has_permissions_team_foreign_key_index');
+
+            $table->primary(
+                [$teamKey, $pivotPermission, $columnNames['model_morph_key'], 'model_type'],
+                'model_has_permissions_permission_model_type_primary'
+            );
         });
 
-        Schema::create($tableNames['model_has_roles'], static function (Blueprint $table) use ($tableNames, $columnNames, $pivotRole, $teams) {
+        Schema::create($tableNames['model_has_roles'], static function (Blueprint $table) use ($tableNames, $columnNames, $pivotRole, $teamKey) {
             $table->unsignedBigInteger($pivotRole);
 
             $table->string('model_type');
@@ -82,19 +78,18 @@ return new class extends Migration
             $table->index([$columnNames['model_morph_key'], 'model_type'], 'model_has_roles_model_id_model_type_index');
 
             $table->foreign($pivotRole)
-                ->references('id') // role id
+                ->references('id')
                 ->on($tableNames['roles'])
                 ->cascadeOnDelete();
-            if ($teams) {
-                $table->unsignedBigInteger($columnNames['team_foreign_key']);
-                $table->index($columnNames['team_foreign_key'], 'model_has_roles_team_foreign_key_index');
 
-                $table->primary([$columnNames['team_foreign_key'], $pivotRole, $columnNames['model_morph_key'], 'model_type'],
-                    'model_has_roles_role_model_type_primary');
-            } else {
-                $table->primary([$pivotRole, $columnNames['model_morph_key'], 'model_type'],
-                    'model_has_roles_role_model_type_primary');
-            }
+            // Super Admin ke liye team id 0 use hoga (primary key mein NULL allowed nahi)
+            $table->unsignedBigInteger($teamKey);
+            $table->index($teamKey, 'model_has_roles_team_foreign_key_index');
+
+            $table->primary(
+                [$teamKey, $pivotRole, $columnNames['model_morph_key'], 'model_type'],
+                'model_has_roles_role_model_type_primary'
+            );
         });
 
         Schema::create($tableNames['role_has_permissions'], static function (Blueprint $table) use ($tableNames, $pivotRole, $pivotPermission) {
@@ -102,12 +97,12 @@ return new class extends Migration
             $table->unsignedBigInteger($pivotRole);
 
             $table->foreign($pivotPermission)
-                ->references('id') // permission id
+                ->references('id')
                 ->on($tableNames['permissions'])
                 ->cascadeOnDelete();
 
             $table->foreign($pivotRole)
-                ->references('id') // role id
+                ->references('id')
                 ->on($tableNames['roles'])
                 ->cascadeOnDelete();
 
