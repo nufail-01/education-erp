@@ -2,43 +2,50 @@
 
 namespace Database\Factories;
 
+use App\Models\Institute;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
+ * @extends Factory<User>
  */
 class UserFactory extends Factory
 {
-    /**
-     * The current password being used by the factory.
-     */
-    protected static ?string $password;
+    protected $model = User::class;
 
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
+    protected static ?string $password = null;
+
     public function definition(): array
     {
         return [
+            'institute_id' => null,
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
+            'mobile_no' => fake()->numerify('##########'),
             'email_verified_at' => now(),
+            // Sirf development/testing password, production mein kabhi nahi
             'password' => static::$password ??= Hash::make('password'),
+            'status' => User::STATUS_ACTIVE,
             'remember_token' => Str::random(10),
         ];
     }
 
-    /**
-     * Indicate that the model's email address should be unverified.
-     */
+    public function forInstitute(Institute|int $institute): static
+    {
+        return $this->state(fn () => [
+            'institute_id' => $institute instanceof Institute ? $institute->id : $institute,
+        ]);
+    }
+
+    public function inactive(): static
+    {
+        return $this->state(fn () => ['status' => User::STATUS_INACTIVE]);
+    }
+
     public function unverified(): static
     {
-        return $this->state(fn (array $attributes) => [
-            'email_verified_at' => null,
-        ]);
+        return $this->state(fn () => ['email_verified_at' => null]);
     }
 }
