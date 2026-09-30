@@ -6,7 +6,9 @@ use App\Http\Controllers\InstituteController;
 use App\Http\Controllers\language\LanguageController;
 use App\Http\Controllers\pages\HomePage;
 use App\Http\Controllers\pages\MiscError;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TeacherController;
+use App\Http\Controllers\UserRoleController;
 use Illuminate\Support\Facades\Route;
 
 // Guest routes
@@ -37,6 +39,14 @@ Route::middleware(['auth', 'active'])->group(function () {
     Route::resource('teachers', TeacherController::class)->except(['show']);
     Route::patch('teachers/{teacher}/status', [TeacherController::class, 'toggleStatus'])
         ->name('teachers.toggle-status');
+
+    // Roles (institute scoped)
+    Route::resource('roles', RoleController::class)->except(['show']);
+
+    // Users aur unke roles
+    Route::get('users', [UserRoleController::class, 'index'])->name('users.index');
+    Route::get('users/{user}/roles', [UserRoleController::class, 'edit'])->name('users.roles.edit');
+    Route::put('users/{user}/roles', [UserRoleController::class, 'update'])->name('users.roles.update');
 });
 
 // locale

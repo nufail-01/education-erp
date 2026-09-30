@@ -32,4 +32,21 @@ class PrivilegeGuard
 
         return true;
     }
+
+    /**
+     * Role forms mein dikhne wali permissions: delegable aur actor ke paas maujood.
+     *
+     * @return list<string>
+     */
+    public function grantablePermissionNames(User $actor): array
+    {
+        return Permission::query()
+            ->where('is_delegable', true)
+            ->orderBy('name')
+            ->get()
+            ->filter(fn ($permission) => $actor->hasPermissionTo($permission))
+            ->pluck('name')
+            ->values()
+            ->all();
+    }
 }

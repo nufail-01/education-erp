@@ -23,6 +23,18 @@
       "name": "Teachers",
       "icon": "menu-icon icon-base ri ri-user-2-line",
       "slug": "teachers"
+    },
+    {
+      "url": "/roles",
+      "name": "Roles",
+      "icon": "menu-icon icon-base ri ri-shield-user-line",
+      "slug": "roles"
+    },
+    {
+      "url": "/users",
+      "name": "Users",
+      "icon": "menu-icon icon-base ri ri-group-line",
+      "slug": "users"
     }
   ]
 }
