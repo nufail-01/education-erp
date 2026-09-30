@@ -2,8 +2,11 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
+use App\Policies\RolePolicy;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Vite;
+use Illuminate\Support\ServiceProvider;
+use Spatie\Permission\Models\Role;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -28,5 +31,8 @@ class AppServiceProvider extends ServiceProvider
             }
             return [];
         });
+
+        // Spatie ka Role model app/Models mein nahi hai, isliye policy manually register
+        Gate::policy(Role::class, RolePolicy::class);
     }
 }

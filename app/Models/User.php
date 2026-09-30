@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
@@ -20,12 +21,11 @@ class User extends Authenticatable
     public const ROLE_SUPER_ADMIN = 'Super Admin';
     public const ROLE_INSTITUTE_ADMIN = 'Institute Admin';
 
+    private ?bool $superAdminCache = null;
+
     /**
-     * The attributes that are mass assignable.
-     *
      * NOTE: institute_id aur status yahan intentionally nahi hain,
      * taaki form se mass-assignment karke koi institute ya status na badal sake.
-     * Inhe controller/service mein explicitly set karenge.
      *
      * @var list<string>
      */
@@ -37,8 +37,6 @@ class User extends Authenticatable
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
-     *
      * @var list<string>
      */
     protected $hidden = [
@@ -47,8 +45,6 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the attributes that should be cast.
-     *
      * @return array<string, string>
      */
     protected function casts(): array
@@ -75,12 +71,30 @@ class User extends Authenticatable
     }
 
     /**
-     * Super Admin kisi institute ka nahi hota (institute_id = null).
-     * Yahan role check nahi karte, taaki Spatie teams context par depend na kare.
+     * Kisi institute ka nahi (institute_id = null).
      */
     public function isGlobalUser(): bool
     {
         return $this->institute_id === null;
+    }
+
+    /**
+     * Team context par depend nahi karta, direct DB se check hota hai,
+     * taaki actor aur target dono ke liye sahi chale.
+     */
+    public function isSuperAdmin(): bool
+    {
+        if ($this->institute_id !== null) {
+            return false;
+        }
+
+        return $this->superAdminCache ??= DB::table(config('permission.table_names.model_has_roles') . ' as mhr')
+            ->join('roles', 'roles.id', '=', 'mhr.role_id')
+            ->where('mhr.model_id', $this->getKey())
+            ->where('mhr.model_type', $this->getMorphClass())
+            ->where('roles.name', self::ROLE_SUPER_ADMIN)
+            ->whereNull('roles.institute_id')
+            ->exists();
     }
 
     public function scopeActive($query)

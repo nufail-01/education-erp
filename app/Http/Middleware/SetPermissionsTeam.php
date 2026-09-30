@@ -1,0 +1,22 @@
+<?php
+
+namespace App\Http\Middleware;
+
+use Closure;
+use Illuminate\Http\Request;
+use Spatie\Permission\PermissionRegistrar;
+use Symfony\Component\HttpFoundation\Response;
+
+class SetPermissionsTeam
+{
+    public function handle(Request $request, Closure $next): Response
+    {
+        $user = $request->user();
+
+        // Super Admin (institute_id = null) ke liye team id 0
+        app(PermissionRegistrar::class)
+            ->setPermissionsTeamId($user ? ($user->institute_id ?? 0) : null);
+
+        return $next($request);
+    }
+}

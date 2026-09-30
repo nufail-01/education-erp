@@ -14,7 +14,7 @@ Route::middleware('guest')->group(function () {
 });
 
 // Authenticated routes (login zaroori)
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'active'])->group(function () {
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
     Route::get('/', [HomePage::class, 'index'])->name('pages-home');
