@@ -6,6 +6,7 @@ use App\Http\Controllers\InstituteController;
 use App\Http\Controllers\language\LanguageController;
 use App\Http\Controllers\pages\HomePage;
 use App\Http\Controllers\pages\MiscError;
+use App\Http\Controllers\TeacherController;
 use Illuminate\Support\Facades\Route;
 
 // Guest routes
@@ -31,6 +32,11 @@ Route::middleware(['auth', 'active'])->group(function () {
         ->only(['index', 'create', 'store', 'edit', 'update']);
     Route::patch('institute-admins/{admin}/status', [InstituteAdminController::class, 'toggleStatus'])
         ->name('institute-admins.toggle-status');
+
+    // Teachers (institute scoped)
+    Route::resource('teachers', TeacherController::class)->except(['show']);
+    Route::patch('teachers/{teacher}/status', [TeacherController::class, 'toggleStatus'])
+        ->name('teachers.toggle-status');
 });
 
 // locale

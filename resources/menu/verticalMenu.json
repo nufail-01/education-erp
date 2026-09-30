@@ -17,6 +17,12 @@
       "name": "Institute Admins",
       "icon": "menu-icon icon-base ri ri-user-settings-line",
       "slug": "institute-admins"
+    },
+    {
+      "url": "/teachers",
+      "name": "Teachers",
+      "icon": "menu-icon icon-base ri ri-user-2-line",
+      "slug": "teachers"
     }
   ]
 }
