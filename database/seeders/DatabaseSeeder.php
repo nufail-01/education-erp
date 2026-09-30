@@ -2,22 +2,24 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        User::factory(10)->create();
+        // Production mein default password ke saath seed nahi hoga
+        if (app()->isProduction() && ! env('SEED_PASSWORD')) {
+            throw new \RuntimeException('Set SEED_PASSWORD in .env before seeding in production.');
+        }
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        $this->call([
+            PermissionSeeder::class,
+            RoleSeeder::class,
+            SuperAdminSeeder::class,
+            InstituteSeeder::class,
+            InstituteAdminSeeder::class,
+            TeacherSeeder::class,
         ]);
     }
 }
