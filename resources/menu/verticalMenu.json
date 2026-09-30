@@ -11,6 +11,12 @@
       "name": "Institutes",
       "icon": "menu-icon icon-base ri ri-building-line",
       "slug": "institutes"
+    },
+    {
+      "url": "/institute-admins",
+      "name": "Institute Admins",
+      "icon": "menu-icon icon-base ri ri-user-settings-line",
+      "slug": "institute-admins"
     }
   ]
 }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\InstituteAdminController;
 use App\Http\Controllers\InstituteController;
 use App\Http\Controllers\language\LanguageController;
 use App\Http\Controllers\pages\HomePage;
@@ -23,6 +24,13 @@ Route::middleware(['auth', 'active'])->group(function () {
     Route::resource('institutes', InstituteController::class)->except(['destroy']);
     Route::patch('institutes/{institute}/status', [InstituteController::class, 'toggleStatus'])
         ->name('institutes.toggle-status');
+
+    // Institute Admins (Super Admin)
+    Route::resource('institute-admins', InstituteAdminController::class)
+        ->parameters(['institute-admins' => 'admin'])
+        ->only(['index', 'create', 'store', 'edit', 'update']);
+    Route::patch('institute-admins/{admin}/status', [InstituteAdminController::class, 'toggleStatus'])
+        ->name('institute-admins.toggle-status');
 });
 
 // locale
