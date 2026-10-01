@@ -136,4 +136,13 @@ class LoginTest extends TestCase
         $response->assertSessionHasErrors('email');
         $this->assertGuest();
     }
+
+    public function test_protected_pages_send_no_cache_headers(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->get(route('pages-home'));
+
+        $this->assertStringContainsString('no-store', $response->headers->get('Cache-Control'));
+    }
 }

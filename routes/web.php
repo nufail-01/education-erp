@@ -19,7 +19,7 @@ Route::middleware('guest')->group(function () {
 });
 
 // Authenticated routes
-Route::middleware(['auth', 'active'])->group(function () {
+Route::middleware(['auth', 'active', 'nocache'])->group(function () {
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
     // Dashboard
