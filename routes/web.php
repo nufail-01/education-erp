@@ -6,6 +6,7 @@ use App\Http\Controllers\InstituteAdminController;
 use App\Http\Controllers\InstituteController;
 use App\Http\Controllers\language\LanguageController;
 use App\Http\Controllers\pages\MiscError;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\UserRoleController;
@@ -21,7 +22,7 @@ Route::middleware('guest')->group(function () {
 Route::middleware(['auth', 'active'])->group(function () {
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
-    // Dashboard  
+    // Dashboard
     Route::get('/', [DashboardController::class, 'index'])->name('pages-home');
 
     // Institutes (Super Admin)
@@ -44,12 +45,17 @@ Route::middleware(['auth', 'active'])->group(function () {
     // Roles (institute scoped)
     Route::resource('roles', RoleController::class)->except(['show']);
 
-    // Users  
+    // Users and their roles
     Route::get('users', [UserRoleController::class, 'index'])->name('users.index');
     Route::get('users/{user}/roles', [UserRoleController::class, 'edit'])->name('users.roles.edit');
     Route::put('users/{user}/roles', [UserRoleController::class, 'update'])->name('users.roles.update');
+
+    // Profile
+    Route::get('profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::put('profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
 });
 
-// locale
+// Locale
 Route::get('/lang/{locale}', [LanguageController::class, 'swap']);
 Route::get('/pages/misc-error', [MiscError::class, 'index'])->name('pages-misc-error');
