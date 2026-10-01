@@ -10,17 +10,11 @@ use Spatie\Permission\Models\Role;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
     public function register(): void
     {
         //
     }
 
-    /**
-     * Bootstrap any application services.
-     */
     public function boot(): void
     {
         Vite::useStyleTagAttributes(function (?string $src, string $url, ?array $chunk, ?array $manifest) {
@@ -32,7 +26,6 @@ class AppServiceProvider extends ServiceProvider
             return [];
         });
 
-        // Spatie ka Role model app/Models mein nahi hai, isliye policy manually register
         Gate::policy(Role::class, RolePolicy::class);
     }
 }

@@ -24,9 +24,7 @@ class User extends Authenticatable
     private ?bool $superAdminCache = null;
 
     /**
-     * NOTE: institute_id aur status yahan intentionally nahi hain,
-     * taaki form se mass-assignment karke koi institute ya status na badal sake.
-     *
+    
      * @var list<string>
      */
     protected $fillable = [
@@ -70,18 +68,13 @@ class User extends Authenticatable
         return $this->status === self::STATUS_ACTIVE;
     }
 
-    /**
-     * Kisi institute ka nahi (institute_id = null).
-     */
+    
     public function isGlobalUser(): bool
     {
         return $this->institute_id === null;
     }
 
-    /**
-     * Team context par depend nahi karta, direct DB se check hota hai,
-     * taaki actor aur target dono ke liye sahi chale.
-     */
+    
     public function isSuperAdmin(): bool
     {
         if ($this->institute_id !== null) {

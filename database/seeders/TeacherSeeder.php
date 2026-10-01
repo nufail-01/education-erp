@@ -16,7 +16,7 @@ class TeacherSeeder extends Seeder
         foreach (Institute::all() as $institute) {
             $letter = strtolower(substr($institute->code, -1));
 
-            // Har institute ka apna "Teacher" role
+           
             $role = Role::firstOrCreate(
                 ['name' => 'Teacher', 'guard_name' => 'web', 'institute_id' => $institute->id],
                 ['is_protected' => false]

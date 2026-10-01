@@ -66,7 +66,7 @@ class AuthenticatedSessionController extends Controller
 
         RateLimiter::clear($throttleKey);
 
-        // Session fixation se bachne ke liye
+       
         $request->session()->regenerate();
 
         return redirect()->intended(route('pages-home'));

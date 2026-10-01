@@ -31,7 +31,7 @@ return new class extends Migration
             $table->unique(['name', 'guard_name']);
         });
 
-        // Roles: institute_id NULL = global role (Super Admin ke), value = us institute ka role
+      
         Schema::create($tableNames['roles'], static function (Blueprint $table) use ($teamKey) {
             $table->id();
             $table->unsignedBigInteger($teamKey)->nullable();

@@ -12,7 +12,7 @@ class TeacherPolicy
         return $user->can('teachers.view');
     }
 
-    // Global user (Super Admin) padh sakta hai, likh nahi sakta
+    
     public function view(User $user, Teacher $teacher): bool
     {
         return $user->can('teachers.view')

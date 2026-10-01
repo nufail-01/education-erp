@@ -71,7 +71,7 @@ class TeacherController extends Controller
             $teacher->status = Teacher::STATUS_ACTIVE;
             $teacher->save();
 
-            // Har institute ka apna default "Teacher" role
+           
             $registrar = app(PermissionRegistrar::class);
             $previous = $registrar->getPermissionsTeamId();
             $registrar->setPermissionsTeamId($instituteId);
@@ -132,7 +132,7 @@ class TeacherController extends Controller
             $teacher->status = $new;
             $teacher->save();
 
-            // User status bhi badlo, taaki inactive teacher login na kar sake
+       
             $teacher->user->status = $new;
             $teacher->user->save();
 

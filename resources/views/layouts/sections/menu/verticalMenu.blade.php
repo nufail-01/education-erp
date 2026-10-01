@@ -32,6 +32,10 @@
 
   <ul class="menu-inner py-1">
     @foreach ($menuData[0]->menu as $menu)
+    @php
+        $requiredPermission = $menu->permission ?? null;
+      @endphp
+      @continue($requiredPermission && ! auth()->user()?->can($requiredPermission))
       {{-- adding active and open class if child is active --}}
 
       {{-- menu headers --}}

@@ -25,7 +25,7 @@ class UserFactory extends Factory
             'email' => fake()->unique()->safeEmail(),
             'mobile_no' => fake()->numerify('##########'),
             'email_verified_at' => now(),
-            // Sirf development/testing password, production mein kabhi nahi
+            
             'password' => static::$password ??= Hash::make('password'),
             'status' => User::STATUS_ACTIVE,
             'remember_token' => Str::random(10),

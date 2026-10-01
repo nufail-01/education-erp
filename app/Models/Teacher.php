@@ -14,7 +14,7 @@ class Teacher extends Model
     public const STATUS_ACTIVE = 'active';
     public const STATUS_INACTIVE = 'inactive';
 
-    // institute_id aur user_id fillable nahi, controller/service mein explicitly set honge
+    
     protected $fillable = [
         'employee_code',
         'qualification',

@@ -11,7 +11,7 @@ class InstituteAdminPolicy
         return $user->can('institute-admins.manage') && $user->isGlobalUser();
     }
 
-    // Target sirf Institute Admin hona chahiye, koi aur user nahi
+   
     public function manageTarget(User $user, User $target): bool
     {
         return $this->manage($user)

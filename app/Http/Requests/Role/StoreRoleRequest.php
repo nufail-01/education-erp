@@ -13,8 +13,8 @@ class StoreRoleRequest extends FormRequest
     public function authorize(): bool
     {
         $user = $this->user();
-
-        // Global user (Super Admin) custom role nahi banata, protected roles hi uske paas hain
+ 
+        
         return $user !== null && ! $user->isGlobalUser() && $user->can('create', Role::class);
     }
 

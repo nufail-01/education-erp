@@ -28,9 +28,7 @@ class TeacherFactory extends Factory
         ];
     }
 
-    /**
-     * Teacher ko ek institute se jodta hai, aur uska user bhi usi institute ka banata hai.
-     */
+   
     public function forInstitute(Institute $institute): static
     {
         return $this->state(fn () => [

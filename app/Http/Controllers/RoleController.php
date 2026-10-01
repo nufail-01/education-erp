@@ -54,7 +54,7 @@ class RoleController extends Controller
         $data = $request->validated();
         $names = $data['permissions'] ?? [];
 
-        // Server-side dobara check, form par bharosa nahi
+       
         abort_unless($this->guard->canGrantPermissions($actor, $names), 403);
 
         $role = DB::transaction(function () use ($actor, $data, $names) {
@@ -93,7 +93,7 @@ class RoleController extends Controller
         abort_unless($this->guard->canGrantPermissions($actor, $names), 403);
 
         DB::transaction(function () use ($actor, $role, $data, $names) {
-            // Jo permissions actor ke form mein aati hi nahi, unhe chhedna nahi
+           
             $grantable = $this->guard->grantablePermissionNames($actor);
             $keep = $role->permissions->pluck('name')->diff($grantable)->all();
 
@@ -130,9 +130,7 @@ class RoleController extends Controller
         return redirect()->route('roles.index')->with('danger', 'Role deleted.');
     }
 
-    /**
-     * Dusre institute ka role dikhna hi nahi chahiye.
-     */
+     
     private function scoped(Request $request, Role $role): void
     {
         $actor = $request->user();

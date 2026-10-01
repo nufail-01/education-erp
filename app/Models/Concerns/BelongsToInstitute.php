@@ -10,7 +10,7 @@ trait BelongsToInstitute
     protected static function bootBelongsToInstitute(): void
     {
         static::addGlobalScope('institute', function (Builder $builder) {
-            // hasUser() se user dobara DB se load nahi hota (recursion nahi)
+            
             if (! Auth::hasUser()) {
                 return;
             }

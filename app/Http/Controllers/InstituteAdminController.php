@@ -116,9 +116,7 @@ class InstituteAdminController extends Controller
         return back()->with($new === User::STATUS_INACTIVE ? 'danger' : 'success', "Admin is now {$new}.");
     }
 
-    /**
-     * Sirf Institute Admin par kaam kare, kisi aur user ID se bypass na ho.
-     */
+    
     private function authorizeTarget(User $admin): void
     {
         Gate::authorize('institute-admins.manage');

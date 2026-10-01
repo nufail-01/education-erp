@@ -8,12 +8,9 @@ use Spatie\Permission\PermissionRegistrar;
 
 class PermissionSeeder extends Seeder
 {
-    /**
-     * name => is_delegable
-     * Delegable = Institute Admin isse apne institute ke staff ko de sakta hai.
-     */
+     
     public const PERMISSIONS = [
-        // Super Admin only (kabhi delegate nahi hoti)
+       
         'institutes.view' => false,
         'institutes.create' => false,
         'institutes.update' => false,
@@ -23,7 +20,7 @@ class PermissionSeeder extends Seeder
         'users.view-all' => false,
         'global-roles.manage' => false,
 
-        // Institute level
+         
         'teachers.view' => true,
         'teachers.create' => true,
         'teachers.update' => true,
@@ -31,7 +28,7 @@ class PermissionSeeder extends Seeder
         'institute-users.view' => true,
         'activity-logs.view' => true,
 
-        // Roles management delegate nahi hoti (privilege escalation se bachne ke liye)
+ 
         'roles.view' => false,
         'roles.create' => false,
         'roles.update' => false,

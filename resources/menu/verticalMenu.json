@@ -10,31 +10,36 @@
       "url": "/institutes",
       "name": "Institutes",
       "icon": "menu-icon icon-base ri ri-building-line",
-      "slug": "institutes"
+      "slug": "institutes",
+      "permission": "institutes.view"
     },
     {
       "url": "/institute-admins",
       "name": "Institute Admins",
       "icon": "menu-icon icon-base ri ri-user-settings-line",
-      "slug": "institute-admins"
+      "slug": "institute-admins",
+      "permission": "institute-admins.manage"
     },
     {
       "url": "/teachers",
       "name": "Teachers",
       "icon": "menu-icon icon-base ri ri-user-2-line",
-      "slug": "teachers"
+      "slug": "teachers",
+      "permission": "teachers.view"
     },
     {
       "url": "/roles",
       "name": "Roles",
       "icon": "menu-icon icon-base ri ri-shield-user-line",
-      "slug": "roles"
+      "slug": "roles",
+      "permission": "roles.view"
     },
     {
       "url": "/users",
       "name": "Users",
       "icon": "menu-icon icon-base ri ri-group-line",
-      "slug": "users"
+      "slug": "users",
+      "permission": "institute-users.view"
     }
   ]
 }

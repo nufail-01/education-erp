@@ -13,7 +13,7 @@ class SetPermissionsTeam
     {
         $user = $request->user();
 
-        // Super Admin (institute_id = null) ke liye team id 0
+  
         app(PermissionRegistrar::class)
             ->setPermissionsTeamId($user ? ($user->institute_id ?? 0) : null);
 

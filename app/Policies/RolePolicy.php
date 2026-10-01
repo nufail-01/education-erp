@@ -32,9 +32,7 @@ class RolePolicy
         return $user->can('roles.delete') && $this->manageable($user, $role);
     }
 
-    /**
-     * Role kisi user ko dena: privilege escalation yahin rukta hai.
-     */
+    
     public function assign(User $actor, Role $role, User $target): bool
     {
         if (! $actor->can('roles.assign')) {
@@ -58,7 +56,7 @@ class RolePolicy
             return true;
         }
 
-        // Institute roles: role, target aur actor teeno same institute mein
+        
         return $role->institute_id === $target->institute_id
             && ($actor->isGlobalUser() || $actor->institute_id === $role->institute_id);
     }
@@ -71,7 +69,7 @@ class RolePolicy
     private function manageable(User $user, Role $role): bool
     {
         if ($role->is_protected) {
-            return false; // Super Admin / Institute Admin edit ya delete nahi honge
+            return false;  
         }
 
         if ($role->institute_id === null) {

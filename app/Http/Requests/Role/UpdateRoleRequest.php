@@ -18,7 +18,7 @@ class UpdateRoleRequest extends FormRequest
             return false;
         }
 
-        // Dusre institute ka role: 404
+    
         if (! $user->isGlobalUser() && $role->institute_id !== $user->institute_id) {
             abort(404);
         }
