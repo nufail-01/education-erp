@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Policies\RolePolicy;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
@@ -27,5 +28,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Gate::policy(Role::class, RolePolicy::class);
+
+        Paginator::useBootstrapFive();
     }
 }
