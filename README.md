@@ -1,66 +1,185 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Education ERP (Version 1.0, Foundation Release)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Multi-institute Education ERP foundation: authentication, institute management,
+user hierarchy, teacher accounts, dynamic role-based permissions and separate dashboards.
 
-## About Laravel
+Out of scope for V1: student admissions, classes, subjects, attendance, examinations,
+fees, academic reporting and payment gateways.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Tech stack
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+| Layer         | Choice                                                                 |
+| ------------- | ---------------------------------------------------------------------- |
+| Backend       | Laravel 12, PHP 8.3                                                    |
+| Database      | MySQL 8                                                                |
+| Views         | Blade, Materialize (Bootstrap 5)                                       |
+| Build         | Vite, npm                                                              |
+| RBAC          | spatie/laravel-permission 8.x (Teams mode, `institute_id` as team key) |
+| Authorization | Policies, Gates, permission middleware, institute global scope         |
+| Validation    | Form Requests                                                          |
+| Tests         | PHPUnit feature tests (separate `education_erp_test` database)         |
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Requirements
 
-## Learning Laravel
+- PHP 8.3 or higher
+- Composer
+- Node 18 or higher
+- MySQL 8
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Setup
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+```bash
+git clone <repo-url> education-erp
+cd education-erp
+composer install
+npm install --legacy-peer-deps
+cp .env.example .env
+php artisan key:generate
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Create two empty MySQL databases: `education_erp` and `education_erp_test`.
+Set `DB_USERNAME` and `DB_PASSWORD` in `.env`, then run:
 
-## Laravel Sponsors
+```bash
+php artisan migrate:fresh --seed
+php artisan storage:link
+npm run build
+php artisan serve
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Open http://localhost:8000.
 
-### Premium Partners
+## Demo credentials (development only)
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+See `DEV_CREDENTIALS.md`. All demo users share the password in `SEED_PASSWORD`
+(default `password`).
 
-## Contributing
+| Role            | Email                           | Institute                                  |
+| --------------- | ------------------------------- | ------------------------------------------ |
+| Super Admin     | superadmin@example.com          | none                                       |
+| Institute Admin | admin.a@example.com             | DEMO-A (active)                            |
+| Institute Admin | admin.b@example.com             | DEMO-B (active)                            |
+| Institute Admin | admin.c@example.com             | DEMO-C (inactive, login blocked by design) |
+| Teacher         | teacher1.a@example.com (1 to 3) | DEMO-A                                     |
+| Teacher         | teacher1.b@example.com (1 to 3) | DEMO-B                                     |
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Features
 
-## Code of Conduct
+- Email and password login, logout, session regeneration, CSRF protection, login rate limiting
+- Inactive user and inactive institute handling (login blocked, active sessions ended)
+- Institute management: create, edit, view, activate and deactivate, logo upload,
+  search, status filter and pagination
+- Institute Admin management (Super Admin)
+- Teacher accounts: create, edit, activate and deactivate, delete, search and filter
+- Custom roles with delegable permissions, and user role assignment
+- Role-aware sidebar menu
+- Dashboards for Super Admin, Institute Admin and Teacher
+- Profile and password update
+- Activity log (shown on the Institute Admin dashboard)
+- 403 access denied page
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Roles and permissions
 
-## Security Vulnerabilities
+- **Super Admin** manages institutes and Institute Admins, views all users and sees global metrics.
+- **Institute Admin** manages teachers and custom roles for their own institute only.
+- **Teacher** logs in, edits their own profile and uses only the permissions granted by their role.
+- Hierarchy defines scope, not inheritance. Every request checks permission and institute ownership.
+- Institute Admins can grant only permissions flagged `is_delegable`.
+- The `Super Admin` and `Institute Admin` roles are protected and cannot be edited or deleted.
+- Nobody except a Super Admin can assign the Super Admin role.
+- Records of another institute return 404, enforced by a global scope plus policies.
+- The Super Admin uses Spatie team id `0`, because pivot primary keys cannot be NULL.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Database
 
-## License
+Main tables: `institutes`, `users`, `teachers`, `activity_logs`, plus the Spatie tables
+(`roles`, `permissions`, `model_has_roles`, `model_has_permissions`, `role_has_permissions`).
+The ER diagram is in `docs/ER_DIAGRAM.md`.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Additions beyond the base spec, required to implement the rules:
+
+- `permissions.is_delegable`: marks permissions an Institute Admin may delegate
+- `roles.is_protected`: protects Super Admin and Institute Admin roles
+- `roles.institute_id`: institute scope for custom roles (NULL means global role)
+
+## Tests
+
+```bash
+php artisan test
+```
+
+98 tests cover authentication, RBAC, cross-institute isolation, institutes, institute admins,
+teachers, roles, profile, dashboards, menu visibility and seeders.
+
+Tests run against the `education_erp_test` database, so development data is never touched.
+
+## Production checklist
+
+- Set `APP_ENV=production` and `APP_DEBUG=false`
+- Generate a new `APP_KEY`, and never commit `.env`
+- Set a strong `SEED_PASSWORD`, or do not run the demo seeders. Run only `PermissionSeeder`
+  and `RoleSeeder`, then create the real Super Admin manually.
+  The seeder refuses to run in production without `SEED_PASSWORD`.
+- Remove all `example.com` demo users
+- Use HTTPS and set `SESSION_SECURE_COOKIE=true`
+- Use a strong database password (not an empty root password)
+- Run `php artisan config:cache`, `route:cache` and `view:cache`
+
+## Project structure
+
+```
+app/Http/Controllers   Controllers (Auth, Institute, InstituteAdmin, Teacher, Role, UserRole, Dashboard, Profile)
+app/Http/Middleware    EnsureUserIsActive, SetPermissionsTeam, NoCacheHeaders
+app/Http/Requests      Form Requests grouped by feature
+app/Models             Institute, User, Teacher, ActivityLog, Concerns/BelongsToInstitute
+app/Policies           InstitutePolicy, TeacherPolicy, RolePolicy
+app/Services           ActivityLogger, PrivilegeGuard
+database/seeders       Permission, Role, SuperAdmin, Institute, InstituteAdmin, Teacher seeders
+tests/Feature          Feature tests
+```
+
+## Screenshots
+
+### Login
+
+![Login](docs/screenshots/01-login.png)
+
+### Super Admin dashboard
+
+![Super Admin dashboard](docs/screenshots/02-super-admin-dashboard.png)
+
+### Institutes list (search and filter)
+
+![Institutes list](docs/screenshots/03-institutes-list.png)
+
+### Institute Admin dashboard
+
+![Institute Admin dashboard](docs/screenshots/04-institute-admin-dashboard.png)
+
+### Teachers list
+
+![Teachers list](docs/screenshots/05-teachers-list.png)
+
+### Add role (delegable permissions only)
+
+![Add role](docs/screenshots/06-role-create.png)
+
+### Teacher dashboard
+
+![Teacher dashboard](docs/screenshots/07-teacher-dashboard.png)
+
+### Access denied (403)
+
+![403](docs/screenshots/08-403.png)
+
+### Institute Admins (Super Admin)
+
+![Institute Admins](docs/screenshots/09-institute-admins.png)
+
+### Assign roles to a user
+
+![Assign roles](docs/screenshots/10-users-roles-assign.png)
+
+### Profile and password update
+
+![Profile](docs/screenshots/11-profile.png)

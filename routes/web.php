@@ -5,7 +5,6 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InstituteAdminController;
 use App\Http\Controllers\InstituteController;
 use App\Http\Controllers\language\LanguageController;
-use App\Http\Controllers\pages\MiscError;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TeacherController;
@@ -58,4 +57,3 @@ Route::middleware(['auth', 'active', 'nocache'])->group(function () {
 
 // Locale
 Route::get('/lang/{locale}', [LanguageController::class, 'swap']);
-Route::get('/pages/misc-error', [MiscError::class, 'index'])->name('pages-misc-error');

@@ -39,7 +39,7 @@
           <!-- /Logo -->
 
           <div class="card-body mt-1">
-            <h4 class="mb-1">Welcome to {{ config('app.name') }}! 👋</h4>
+            <h4 class="mb-1">Welcome to {{ config('app.name') }}!</h4>
             <p class="mb-5">Please sign in to your account</p>
 
             <form id="formAuthentication" class="mb-5" action="{{ route('login.store') }}" method="POST">
